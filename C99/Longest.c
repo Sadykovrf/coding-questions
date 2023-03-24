@@ -6,35 +6,51 @@ int lengthOfLongestSubstring(char *s);
 
 int lengthOfLongestSubstring(char *s) {
     int n = strlen(s);
-    int maxLength = 0;
-    int start = 0;
-    int end = 0;
     int charIndex[128] = {0};
-    int currentCharIndex;
+    int maxLength = 0, currentLength = 0, currentCharIndex = 0;
 	char currentChar;
-	int length;
-	
-    while (end < n) {
-        currentChar = s[end];
-        currentCharIndex = charIndex[currentChar];
-        if (currentCharIndex > 0 && currentCharIndex >= start) {
-            start = currentCharIndex;
+    
+    for (int i = 0; i < n; i++) {
+        currentChar = s[i];
+        currentCharIndex = charIndex[(int)currentChar];
+        if (currentCharIndex > 0 && i - currentCharIndex <= currentLength) {
+            if (currentLength > maxLength) {
+                maxLength = currentLength;
+            }
+            currentLength = i - currentCharIndex;
         }
-        length = end - start + 1;
-        if (length > maxLength) {
-            maxLength = length;
-        }
-        charIndex[currentChar] = end + 1;
-        end++;
+        currentLength++;
+        charIndex[(int)currentChar] = i + 1;
     }
-
+    if (currentLength > maxLength) {
+        maxLength = currentLength;
+    }
     return maxLength;
 }
 
 int main(void) {
-    const char *s = "abcabcbb";
     int length;
+	char s[50000];
+    char *pos;
+	int n = 0;
+	
+    printf("Enter a string: ");
+    if (fgets(s, sizeof(s), stdin) != NULL) {
+		n = strlen(s);
+        if (n > 50000) {
+            printf("Error: input string length is too long\n");
+			return -1;
+        }
+		if ((pos=strchr(s, '\n')) != NULL) {
+            *pos = '\0';
+        }
+        printf("The entered string is: %s", s);
+    }
+    else {
+        printf("Error reading the string\n");
+		return -2;
+    }
     length = lengthOfLongestSubstring(s);
-    printf("%d\n", length);
+    printf("\n%d\n", length);
     return 0;
 }
